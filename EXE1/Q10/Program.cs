@@ -55,15 +55,14 @@ namespace Q10
         }
         static void Main(string[] args)
         {
-            while (true)
+            string s = null;
+            do
             {
                 try
                 {
                     List<string> sb = new List<string>();
-                    string s;
-                    while (true)
+                    while ((s = Console.ReadLine()) != null)
                     {
-                        s = Console.ReadLine();
                         if (s.Length != 0) sb.Add(s);
                         else if (sb.Count != 0) break;
                     }
@@ -73,7 +72,7 @@ namespace Q10
                 {
                     Console.WriteLine(e);
                 }
-            }
+            } while (s != null); // should end the program when EOF
         }
     }
 }
