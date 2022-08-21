@@ -1,16 +1,12 @@
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.text.DateFormatSymbols;
 import java.util.*;
-import java.util.function.Function;
 
 public class Q6 {
-    static final String[] months = DateFormatSymbols.getInstance().getMonths();
+    static final String[] months = DateFormatSymbols.getInstance(Locale.ROOT).getMonths();
     static class Person {
-        int YY;
-        int MM;
-        int DD;
-        int PB;
-        int sss;
-        int G;
+        int YY, MM, DD, PB, sss, G;
         String id;
         int ptr = 0;
 
@@ -43,18 +39,15 @@ public class Q6 {
                     );
         }
     }
-    static <T extends Comparable<T>> Comparator<Person> comparatorBy(Function<Person, T> f) {
-        return (x, y) -> f.apply(x).compareTo(f.apply(y));
-    }
 
     static void Q6(List<String> sb) {
-        String s = String.join("", sb).replaceAll(" ", "").replaceAll(";", "");
-        int ptr = 0;
+        String[] sarr = String.join("", sb).replaceAll(" ", "").split(";");
+        int idLen = "YYMMDD-PB-###G".length();
+        String sortByStr = sarr[sarr.length-1].substring(idLen);
         List<Person> personList = new ArrayList<>();
-        while ('0' <= s.charAt(ptr) && s.charAt(ptr) <= '9') {
-            Person p = new Person(s.substring(ptr, ptr + 14));
+        for (String s : sarr) {
+            Person p = new Person(s.substring(0, idLen));
             personList.add(p);
-            ptr += 14;
         }
         /*
         Birthdate
@@ -64,24 +57,20 @@ public class Q6 {
         GenderwithMalefirst
         GenderwithFemalefirst
         */
-        HashMap<String, Function<Person, Comparable>> dict = new HashMap<>() {{
-            put("Birthdate", (x -> x.YY * 10000 + x.MM * 100 + x.DD));
-            put("BirthYear", (x -> x.YY));
-            put("BirthMonth", (x -> x.MM));
-            put("BirthDay", (x -> x.DD));
-            put("GenderwithMalefirst", (x -> 1 - x.G % 2));  // odd first
-            put("GenderwithFemalefirst", (x -> x.G % 2));  // even first
-        }};
+        HashMap<String, Comparator<Person>> dict = new HashMap<>();
+        dict.put("Birthdate", Comparator.comparing(x -> x.YY * 10000 + x.MM * 100 + x.DD));
+        dict.put("BirthYear", Comparator.comparing(x -> x.YY));
+        dict.put("BirthMonth", Comparator.comparing(x -> x.MM));
+        dict.put("BirthDay", Comparator.comparing(x -> x.DD));
+        dict.put("GenderwithMalefirst", Comparator.comparing(x -> 1 - x.G % 2));  // odd first
+        dict.put("GenderwithFemalefirst", Comparator.comparing(x -> x.G % 2));  // even first
         List<Comparator<Person>> comparators = new ArrayList<>();
         outer:
         for (int i = 0; i < 3; i++) {
-            String substr = s.substring(ptr);
             for (String key : dict.keySet()) {
-                if (substr.startsWith(key)) {
-                    ptr += key.length();
-                    Function<Person, Comparable> f = dict.get(key);
-                    Comparator<Person> comp = (x, y) -> f.apply(x).compareTo(f.apply(y));
-                    comparators.add(comp);
+                if (sortByStr.startsWith(key)) {
+                    sortByStr = sortByStr.substring(key.length());
+                    comparators.add(dict.get(key));
                     continue outer;
                 }
             }
@@ -89,7 +78,7 @@ public class Q6 {
         }
         personList.sort((x, y) -> {
             int c = 0;
-            for (Comparator<Person> comp : comparators){
+            for (Comparator<Person> comp : comparators) {
                 c = comp.compare(x, y);
                 if (c != 0) return c;
             }
@@ -101,14 +90,13 @@ public class Q6 {
     }
 
     public static void main(String[] args) {
-        Scanner sr = new Scanner(System.in);
+        BufferedReader sr = new BufferedReader(new InputStreamReader(System.in));
         String s = null;
         do {
             try {
                 List<String> sb = new ArrayList<>();
                 s = null;
-                while (sr.hasNextLine()) {
-                    s = sr.nextLine();
+                while ((s = sr.readLine()) != null) {
                     if (s.length() != 0) sb.add(s);
                     else if (sb.size() != 0) break;
                 }
