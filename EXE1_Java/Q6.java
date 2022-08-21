@@ -95,7 +95,6 @@ public class Q6 {
         do {
             try {
                 List<String> sb = new ArrayList<>();
-                s = null;
                 while ((s = sr.readLine()) != null) {
                     if (s.length() != 0) sb.add(s);
                     else if (sb.size() != 0) break;
