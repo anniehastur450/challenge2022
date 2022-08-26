@@ -20,15 +20,10 @@ class Polynomial:
         return res
 
 def findRoot(p, diff_p, q_j, s_j):
-    a = findRoot0(p, diff_p, (q_j + s_j) / 2)
-    if q_j <= a <= s_j:
-        return a
-    a = findRoot0(p, diff_p, q_j)
-    if q_j <= a <= s_j:
-        return a
-    a = findRoot0(p, diff_p, s_j)
-    if q_j <= a <= s_j:
-        return a
+    for x_1 in [(q_j + s_j) / 2, q_j, s_j]:
+        a = findRoot0(p, diff_p, x_1)
+        if q_j <= a <= s_j:
+            return a
     return float('nan')
 
 def findRoot0(p, diff_p, x_1):
