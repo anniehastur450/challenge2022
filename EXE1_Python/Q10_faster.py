@@ -11,7 +11,7 @@ def getLowest(nums, lookup, set_of_indexes):
         lowest = None
         for x in key:
             sum1 = sum0 - nums[x]
-            sum1 += nums[x] / (2 if sum1 >= 80 else 1);
+            sum1 += nums[x] / (2 if sum1 >= 80 else 1)
             if lowest is None or sum1 < lowest:
                 lowest = sum1
         lookup[key] = lowest
